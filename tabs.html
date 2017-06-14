@@ -1,0 +1,159 @@
+<html lang="en"> 
+<head> 
+	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+   <title>选项卡插件</title> 
+   <style>
+   		* {
+  margin: 0;
+  padding: 0;
+}
+ul, ol, li {
+  list-style: none;
+}
+
+/* tabs */
+.tabs {
+  background-color: #fff;
+  border: 1px #ddd solid;
+  margin: 20px;
+}
+.tabs-nav {
+  border-bottom: 1px #ddd solid;
+}
+.tabs-nav li {
+  cursor: default;
+  display: inline-block;
+  padding: 10px;
+}
+.tabs-nav li.active {
+  color: #f60;
+  font-weight: bolder;
+}
+.tabs-contents {
+  display: none;
+  padding: 20px;
+}
+   </style>
+</head>
+<body>
+   <div class="tabs" data-vendor="tabs">
+  <ul class="tabs-nav">
+    <li class="active">标签一</li>
+    <li>标签二</li>
+    <li>标签三</li>
+  </ul>
+  <div class="tabs-contents" style="display: block;">内容一</div>
+  <div class="tabs-contents">内容二</div>
+  <div class="tabs-contents">
+  内容三
+  
+  <div class="tabs" data-vendor="tabs">
+  <ul class="tabs-nav">
+    <li>标签一</li>
+    <li class="active">标签二</li>
+    <li>标签三</li>
+  </ul>
+  <div class="tabs-contents">内容一</div>
+  <div class="tabs-contents" style="display: block;">内容二</div>
+  <div class="tabs-contents">内容三</div>
+</div>
+  
+  </div>
+</div>
+
+<div class="tabs" data-vendor="tabs">
+  <ul class="tabs-nav">
+    <li>标签一</li>
+    <li class="active">标签二</li>
+    <li>标签三</li>
+  </ul>
+  <div class="tabs-contents">内容一</div>
+  <div class="tabs-contents" style="display: block;">内容二</div>
+  <div class="tabs-contents">内容三</div>
+</div>
+
+<div class="tabs" data-vendor="tabs">
+  <ul class="tabs-nav">
+    <li>A</li>
+    <li>B</li>
+    <li>C</li>
+  </ul>
+  <div class="tabs-contents">内容一</div>
+  <div class="tabs-contents">内容二</div>
+  <div class="tabs-contents">内容三</div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+   (function($){
+   var name = 'myTabs';
+  
+   // 选项卡
+  var AppTabs = function(element,options){
+   // 参数继承
+    this.options = $.extend(true, {}, AppTabs.DEFAULTS, options);
+
+    // 对象
+    this.$this = $(element);
+    this.$nav = $(element).children('.tabs-nav');
+    this.$navItems = this.$nav.children('li');
+    this.$contents = $(element).children('.tabs-contents');
+    
+    // 初始化
+    this.init();
+  };
+  
+  // 实现方法
+  AppTabs.prototype = {
+   // 初始化
+    init: function() {
+      // 当前高亮 - 默认，获取 .active 的 index 值，否则第一个高亮
+      var $activeNav = this.$nav.children('li.active:first');
+      this.nowInt = $activeNav[0] ? $activeNav.index() : parseInt(this.options.startInt);
+      this.flip(this.nowInt);
+    
+      // 事件绑定
+      $.each(this.$navItems, $.proxy(function(i,item){
+         $(item).on('click.'+ name, $.proxy(this, 'flip', i));
+      },this));
+      
+    },
+    
+    // 切换
+    flip: function(index) {
+      // 标签切换
+      this.$navItems.removeClass('active')
+      .eq(index)
+      .addClass('active');
+      
+      // 内容切换
+      this.$contents.hide()
+      .eq(index)
+      .show();
+    }
+  };
+  
+  // 暴露参数
+  AppTabs.DEFAULTS = {
+    startInt: 0
+  };
+  
+  // jQuery 调用
+  $.fn.appTabs = function(options){
+   var isMethod = (typeof options === 'string') ? true : false;
+    return this.each(function () {
+        var $this = $(this),
+            data = $.data(this, name);
+        if (!data || options) {
+            $.data(this, name, new AppTabs(this, isMethod ? {} : options));
+            data = $.data(this, name);
+        }
+        if (isMethod) {
+            data.call(options, args);
+        }
+    });
+  };
+  
+</script>
+</body>
+</html>
